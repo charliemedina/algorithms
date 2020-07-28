@@ -1,0 +1,9 @@
+﻿The Divide and Conquer Paradigm 
+
+1- DIVIDE the problem into a number of subproblems that are smaller instances of the
+same problem.
+
+2- CONQUER the subproblems by solving them recursively. If the subproblem sizes are
+small enough, however, just solve the subproblems in a straightforward manner.
+
+3- COMBINE the solutions to the subproblems into the solution for the original problem.
