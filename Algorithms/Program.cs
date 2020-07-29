@@ -9,11 +9,6 @@ namespace Algorithms
         static void Main(string[] args)
         {
             dynamic x, y, result, expected, array, sortedArray;
-            //dynamic y;
-            //dynamic result;
-            //dynamic expected;
-            //dynamic array;
-            //dynamic sortedArray;
 
             #region Divide and Conquer
 
@@ -71,10 +66,26 @@ namespace Algorithms
             Console.WriteLine($"\tSorted Array: ");
             Helpers.PrintArray(array);
 
-            Console.Write("\tNumber of inversions are: " + count_inversions);
+            Console.Write($"\tNumber of inversions are: {count_inversions}\n");
+
+            Console.WriteLine("\n- Find Max Crossing SubArray\n");
+
+            var array1 = new[] { 13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7 };
+
+            Console.WriteLine($"\tArray: ");
+            Helpers.PrintArray(array1);
+
+            var (low, high, sum) = Part1.FindMaximunSubArray(array1, 0, array1.Length - 1);
+
+            Assert.AreEqual(low, 7);
+            Assert.AreEqual(high, 10);
+            Assert.AreEqual(sum, 43);
+
+            Console.Write($"\tThe maximum subarray is: from {low} (value {array1[low]}) to {high} (value {array1[high]}) and the sum is {sum}");
+
+            #endregion
 
             Console.WriteLine();
-            #endregion
         }
 
         static class Helpers
@@ -84,7 +95,7 @@ namespace Algorithms
                 Console.Write("\t");
                 for (int i = 0; i < array.Length; i++)
                 {
-                    Console.Write(array[i] + "\t");
+                    Console.Write(array[i] + "   ");
                 }
                 Console.WriteLine("\n");
             }
@@ -92,6 +103,7 @@ namespace Algorithms
             {
                 for (int i = 0; i < matrix.GetLength(0); i++)
                 {
+                    Console.Write("\t");
                     for (int j = 0; j < matrix.GetLength(1); j++)
                     {
                         Console.Write(matrix[i, j] + "\t");

@@ -11,6 +11,7 @@ namespace Algorithms.Divide_and_Conquer
     {
         #region Karatsuba 
 
+        // T(n) = O(n log n) 
         public static decimal Karatsuba(long x, long y)
         {
             var @base = 10;
@@ -71,8 +72,9 @@ namespace Algorithms.Divide_and_Conquer
 
         #endregion
 
-        #region Merge Sort
+        #region Merge Sort 
 
+        // T(n) = O(n log n)
         public static void MergeSort(int[] input, int left, int right)
         {
             if (left < right)
@@ -127,6 +129,7 @@ namespace Algorithms.Divide_and_Conquer
 
         #region Counting Inversions
 
+        // T(n) = O(n log n)
         public static int Sort_and_Count(int[] input)
         {
             if (input.Length < 2)
@@ -170,6 +173,71 @@ namespace Algorithms.Divide_and_Conquer
                 }
             }
             return count;
+        }
+
+        #endregion
+
+        #region Find Max Crossing SubArray
+
+        // T(n) = O(n log n)
+        public static (int low, int high, int sum) FindMaximunSubArray(int[] input, int low, int high)
+        {
+            if (low == high) // base case: only one element
+            {
+                return (low, high, input[low]);
+            }
+            else
+            {
+                int mid = (low + high) / 2;
+                var (left_low, left_high, left_sum) = FindMaximunSubArray(input, low, mid);
+                var (right_low, right_high, right_sum) = FindMaximunSubArray(input, mid + 1, high);
+                var (cross_low, cross_high, cross_sum) = FindMaxCrossingSubArray(input, low, mid, high);
+
+                if (left_sum >= right_sum && left_sum >= cross_sum)
+                {
+                    return (left_low, left_high, left_sum);
+                }
+                else if (right_sum >= left_sum && right_sum >= cross_sum)
+                {
+                    return (right_low, right_high, right_sum);
+                }
+                else
+                {
+                    return (cross_low, cross_high, cross_sum);
+                }
+            }
+        }
+
+        private static (int low, int high, int sum) FindMaxCrossingSubArray(int[] input, int low, int mid, int high)
+        {
+            var left_sum = int.MinValue;
+            var sum1 = 0;
+            var max_left = 0;
+
+            for (int i = mid; i > low; i--)
+            {
+                sum1 += input[i];
+                if (sum1 > left_sum)
+                {
+                    left_sum = sum1;
+                    max_left = i;
+                }
+            }
+
+            var right_sum = int.MinValue;
+            var sum2 = 0;
+            var max_right = 0;
+
+            for (int i = mid + 1; i < high; i++)
+            {
+                sum2 += input[i];
+                if (sum2 > right_sum)
+                {
+                    right_sum = sum2;
+                    max_right = i;
+                }
+            }
+            return (max_left, max_right, left_sum + right_sum);
         }
 
         #endregion
