@@ -1,6 +1,7 @@
 ﻿using Algorithms.Divide_and_Conquer;
 using NUnit.Framework;
 using System;
+using System.Drawing;
 
 namespace Algorithms
 {
@@ -81,7 +82,18 @@ namespace Algorithms
             Assert.AreEqual(high, 10);
             Assert.AreEqual(sum, 43);
 
-            Console.Write($"\tThe maximum subarray is: from {low} (value {array1[low]}) to {high} (value {array1[high]}) and the sum is {sum}");
+            Console.Write($"\tThe maximum subarray is: from {low} (value {array1[low]}) to {high} (value {array1[high]}) and the sum is {sum}\n");
+
+            Console.WriteLine("\n- Closet Pair \n");
+
+            array = new Point[] { new Point(2, 3), new Point(5, 1), new Point(12, 10) };
+
+            Console.WriteLine($"\tPoints: ");
+            Helpers.PrintArray(array);
+
+            result = Part1.ClosetPair(array, array.Length);
+
+            Console.Write($"\tThe smallest distance is: {result}");
 
             #endregion
 

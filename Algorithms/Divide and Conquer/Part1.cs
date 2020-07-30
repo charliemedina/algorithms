@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
+using System.Drawing;
+using System.Linq;
 
 namespace Algorithms.Divide_and_Conquer
 {
@@ -11,7 +8,10 @@ namespace Algorithms.Divide_and_Conquer
     {
         #region Karatsuba 
 
-        // T(n) = O(n log n) 
+        // T(n) = 3T(n/2) + O(n)
+        // T(n) = O(n ^ log2 3) 
+        // T(n) = O(n ^ 1.59)
+
         public static decimal Karatsuba(long x, long y)
         {
             var @base = 10;
@@ -74,15 +74,16 @@ namespace Algorithms.Divide_and_Conquer
 
         #region Merge Sort 
 
+        // T(n) = 2T(n/2) + O(n) 
         // T(n) = O(n log n)
         public static void MergeSort(int[] input, int left, int right)
         {
             if (left < right)
             {
                 var middle = (left + right) / 2;
-                MergeSort(input, left, middle);
-                MergeSort(input, middle + 1, right);
-                Merge(input, left, middle, right);
+                MergeSort(input, left, middle); // O(n/2)
+                MergeSort(input, middle + 1, right); // O(n/2)
+                Merge(input, left, middle, right); // O(n)
             }
         }
 
@@ -179,20 +180,23 @@ namespace Algorithms.Divide_and_Conquer
 
         #region Find Max Crossing SubArray
 
+        // T(n) = O(1) + 2T(n/2) + O(n) + O(1)
+        // T(n) = 2T(n/2) + O(n) 
         // T(n) = O(n log n)
         public static (int low, int high, int sum) FindMaximunSubArray(int[] input, int low, int high)
         {
             if (low == high) // base case: only one element
             {
-                return (low, high, input[low]);
+                return (low, high, input[low]); // O(1)
             }
             else
             {
                 int mid = (low + high) / 2;
-                var (left_low, left_high, left_sum) = FindMaximunSubArray(input, low, mid);
-                var (right_low, right_high, right_sum) = FindMaximunSubArray(input, mid + 1, high);
-                var (cross_low, cross_high, cross_sum) = FindMaxCrossingSubArray(input, low, mid, high);
+                var (left_low, left_high, left_sum) = FindMaximunSubArray(input, low, mid); // O(n/2)
+                var (right_low, right_high, right_sum) = FindMaximunSubArray(input, mid + 1, high);  // O(n/2)
+                var (cross_low, cross_high, cross_sum) = FindMaxCrossingSubArray(input, low, mid, high);  // O(n)
 
+                // O(1)
                 if (left_sum >= right_sum && left_sum >= cross_sum)
                 {
                     return (left_low, left_high, left_sum);
@@ -239,6 +243,91 @@ namespace Algorithms.Divide_and_Conquer
             }
             return (max_left, max_right, left_sum + right_sum);
         }
+
+        #endregion
+
+        #region Closet Pair 
+
+        // T(n) = 2T(n/2) + O(n) + O(n logn) + O(n)
+        // T(n) = 2T(n/2) + O(n log n)
+        // T(n) = T(n x log n x log n)
+
+        public static double ClosetPair(Point[] points, int n)
+        {
+            points = points.OrderBy(p => p.X).ToArray();
+
+            if (n <= 3) // If there are 2 or 3 points, then use brute force  
+            {
+                return BruteForce(points, n);
+            }
+
+            int mid = n / 2;
+            Point midPoint = points[mid];
+
+            var lp = new Point[mid];
+            var rp = new Point[points.Length - mid];
+
+            Array.Copy(points, 0, lp, 0, mid);
+            Array.Copy(points, mid, rp, 0, n - mid);
+                
+            var left_dist = ClosetPair(rp, mid);
+            var right_dist = ClosetPair(lp, n - mid);
+
+            var dist = Math.Min(left_dist, right_dist);
+
+            var strip = new Point[n];
+            int j = 0;
+
+            for (int i = 0; i < n; i++)
+            {
+                if (Math.Abs(points[i].X - midPoint.X) < dist)
+                {
+                    strip[j] = points[i];
+                    j++;
+                }
+            }
+            return Math.Min(dist, ClosetSplitPair(strip, j, dist));
+        }
+
+        private static double ClosetSplitPair(Point[] strip, int size, double dist)
+        {
+            var min = dist;
+
+            strip = strip.OrderBy(p => p.Y).ToArray();
+
+            for (int i = 0; i < size; ++i)
+            {
+                for (int j = i + 1; j < size && (strip[j].Y - strip[i].Y) < min; ++j)
+                {
+                    var d = EuclideanDistance(strip[i], strip[j]);
+                    if (d < min)
+                    {
+                        min = d;
+                    }
+                }
+            }
+            return min;
+        }
+
+        private static double BruteForce(Point[] points, int n)
+        {
+            var min = (double)int.MaxValue;
+
+            for (int i = 0; i < n; ++i)
+            {
+                for (int j = i + 1; j < n; ++j)
+                {
+                    if (EuclideanDistance(points[i], points[j]) < min)
+                    {
+                        min = EuclideanDistance(points[i], points[j]);
+                    }
+                }
+            }
+            return min;
+        }
+
+        private static double EuclideanDistance(Point p1, Point p2) => 
+            Math.Sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y));
 
         #endregion
     }
